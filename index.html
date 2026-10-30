@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="一个不太严肃的科研人格测试：测测你的创新性、前沿性与科研生存能力。" />
+    <meta name="theme-color" content="#111827" />
+    <title>科研潜力实验室 · 非严肃测评</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="site-header">
+        <button class="brand" id="brandButton" type="button" aria-label="返回首页">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          <span>科研潜力实验室</span>
+        </button>
+        <div class="header-actions">
+          <span class="version-pill">BETA 0.1</span>
+          <button class="icon-button" id="statsButton" type="button" title="查看本机演示统计" aria-label="查看本机演示统计">⌁</button>
+        </div>
+      </header>
+
+      <main>
+        <section class="screen landing-screen is-active" id="landingScreen" aria-labelledby="landingTitle">
+          <div class="landing-grid">
+            <div class="landing-copy">
+              <p class="eyebrow"><span class="eyebrow-dot"></span> 非严肃科研人格测评 · 约 3 分钟</p>
+              <h1 id="landingTitle">来测测你的<br /><em>科研潜力</em>吧</h1>
+              <p class="landing-intro">从一只对着电线杆撒尿的野狗开始，看看你能不能把它一路研究到 Nature。</p>
+              <div class="landing-actions">
+                <button class="primary-button primary-button-large" id="startButton" type="button">开始测试 <span>↗</span></button>
+                <button class="text-button" id="howButton" type="button">怎么玩？</button>
+              </div>
+              <div class="trust-row">
+                <span><strong id="landingUnlockCount">2,847</strong> 人已解锁人格</span>
+                <span class="trust-separator">·</span>
+                <span>答案不会上传</span>
+              </div>
+            </div>
+            <div class="landing-art" aria-label="科研潜力实验室插画">
+              <div class="orbit orbit-one"></div>
+              <div class="orbit orbit-two"></div>
+              <div class="lab-card">
+                <div class="lab-card-top"><span>FIELD NOTE 001</span><span>● REC</span></div>
+                <div class="lab-stamp">R<br /><span>LAB</span></div>
+                <p class="lab-question">观察到一只野狗<br />正在选择它的<br /><b>研究对象。</b></p>
+                <div class="lab-scribble">hypothesis<br /><span>≠</span> conclusion</div>
+              </div>
+              <div class="floating-note note-one">创新性<br /><strong>？？</strong></div>
+              <div class="floating-note note-two">可行性<br /><strong>有待观察</strong></div>
+              <div class="floating-star star-one">✦</div>
+              <div class="floating-star star-two">✦</div>
+            </div>
+          </div>
+          <div class="landing-footer-note"><span class="scroll-line"></span> 向下探索你的科研命运</div>
+        </section>
+
+        <section class="screen quiz-screen" id="quizScreen" aria-labelledby="quizTitle" hidden>
+          <div class="quiz-topbar">
+            <button class="back-button" id="backToLandingButton" type="button">← <span>返回</span></button>
+            <div class="progress-wrap" aria-label="答题进度">
+              <div class="progress-meta"><span id="progressLabel">第 1 / 6 题</span><span id="progressPercent">0%</span></div>
+              <div class="progress-track"><div class="progress-value" id="progressValue"></div></div>
+            </div>
+            <span class="mono-label">FIELD TEST / 01</span>
+          </div>
+
+          <div class="quiz-layout">
+            <aside class="quiz-aside">
+              <p class="eyebrow">你的科研潜力档案</p>
+              <p class="aside-copy">没有标准答案，只有不同程度的导师沉默。</p>
+              <div class="aside-stats">
+                <div><span class="aside-number">06</span><span>道情景题</span></div>
+                <div><span class="aside-number">01</span><span>次换题机会</span></div>
+              </div>
+            </aside>
+
+            <div class="question-column">
+              <div class="question-kicker"><span class="kicker-index" id="questionIndex">01</span><span id="questionType">观察题</span></div>
+              <h2 id="quizTitle">你在路边看到一只野狗，对着电线杆撒尿。</h2>
+              <p class="question-context" id="questionContext">导师刚好路过，推了推眼镜：“这个现象很有意思。”你决定如何回应？</p>
+
+              <div class="scenario-actions" id="scenarioActions">
+                <button class="primary-button" id="acceptScenarioButton" type="button">就这个吧 <span>→</span></button>
+                <button class="secondary-button" id="rerollButton" type="button">换个问题 <span>（仅 1 次）</span></button>
+              </div>
+
+              <div class="answer-list" id="answerList" hidden></div>
+              <div class="answer-footer" id="answerFooter" hidden>
+                <p class="selection-hint" id="selectionHint">先选一个最像你的答案</p>
+                <button class="primary-button" id="nextButton" type="button" disabled>确认选择 <span>→</span></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen result-screen" id="resultScreen" aria-labelledby="resultTitle" hidden>
+          <div class="result-header">
+            <p class="eyebrow"><span class="eyebrow-dot"></span> 测评完成 · 你的科研人格已解锁</p>
+            <button class="text-button" id="resultStatsButton" type="button">查看本机统计 ↗</button>
+          </div>
+          <div class="result-grid">
+            <div class="result-main-card">
+              <div class="result-card-top"><span>RESEARCHER PROFILE</span><span id="resultRank">NO. 2848</span></div>
+              <div class="result-badge" id="resultBadge">✦</div>
+              <p class="result-label">你的科研人格是</p>
+              <h2 id="resultTitle">冉冉升起的科研巨星</h2>
+              <p class="result-description" id="resultDescription">你能在荒诞现象里抓住问题，也愿意把灵感落成实验。导师嘴上说着“再想想”，心里已经开始给你排会议了。</p>
+              <div class="result-tags" id="resultTags"></div>
+              <div class="result-card-bottom"><span>科研潜力实验室 / BETA 0.1</span><span id="resultUnlockNumber">第 2,848 位</span></div>
+            </div>
+            <div class="result-side">
+              <div class="score-panel">
+                <div class="score-heading"><span>综合科研指数</span><span class="score-unit">/ 100</span></div>
+                <div class="score-ring" id="scoreRing"><div><strong id="overallScore">86</strong><span>分</span></div></div>
+                <p class="score-comment" id="scoreComment">你和“做出来”之间，只差一个截止日期。</p>
+              </div>
+              <div class="metrics-panel">
+                <div class="panel-label">PROFILE METRICS</div>
+                <div class="metric" data-metric="innovation"><div><span>创新性</span><b>—</b></div><div class="metric-track"><i></i></div></div>
+                <div class="metric" data-metric="frontier"><div><span>前沿性</span><b>—</b></div><div class="metric-track"><i></i></div></div>
+                <div class="metric" data-metric="feasibility"><div><span>可行性</span><b>—</b></div><div class="metric-track"><i></i></div></div>
+                <div class="metric" data-metric="resilience"><div><span>抗导师打击</span><b>—</b></div><div class="metric-track"><i></i></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="result-actions">
+            <button class="primary-button primary-button-large" id="shareButton" type="button">分享我的科研人格 <span>↗</span></button>
+            <button class="secondary-button" id="restartButton" type="button">再测一次</button>
+          </div>
+          <p class="result-footnote">提示：这是一个娱乐测试，真正的科研潜力不由一只野狗决定。</p>
+        </section>
+      </main>
+
+      <div class="modal-backdrop" id="statsModal" hidden>
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="statsTitle">
+          <button class="modal-close" id="closeStatsButton" type="button" aria-label="关闭">×</button>
+          <p class="eyebrow">LOCAL DEMO ANALYTICS</p>
+          <h2 id="statsTitle">本机演示统计</h2>
+          <p class="modal-copy">现在的数据保存在你的浏览器里，方便先体验产品。部署后可以接入 Supabase、Firebase 或自己的 API，查看真实访问量。</p>
+          <div class="stats-grid">
+            <div class="stat-card"><span>页面打开</span><strong id="statViews">0</strong></div>
+            <div class="stat-card"><span>开始测试</span><strong id="statStarts">0</strong></div>
+            <div class="stat-card"><span>完成测试</span><strong id="statCompletions">0</strong></div>
+            <div class="stat-card"><span>解锁人格</span><strong id="statPersonas">0</strong></div>
+          </div>
+          <button class="secondary-button full-button" id="resetStatsButton" type="button">清除本机统计</button>
+        </div>
+      </div>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
