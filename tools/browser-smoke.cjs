@@ -8,6 +8,7 @@ const screenshots = process.env.QA_DIR;
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+  await context.route('**/config.js*', route => route.fulfill({ contentType: 'text/javascript', body: "export const analyticsBaseUrl = '';" }));
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
@@ -74,6 +75,7 @@ const screenshots = process.env.QA_DIR;
   }
   if (screenshots) await page.screenshot({ path: path.join(screenshots, 'desktop-question.png'), fullPage: true });
   const blocked = await browser.newContext();
+  await blocked.route('**/config.js*', route => route.fulfill({ contentType: 'text/javascript', body: "export const analyticsBaseUrl = '';" }));
   await blocked.addInitScript(() => Object.defineProperty(window, 'localStorage', { get() { throw new Error('Storage denied'); } }));
   const blockedPage = await blocked.newPage();
   await blockedPage.goto(base); await blockedPage.click('#startButton'); await blockedPage.click('#acceptScenarioButton');

@@ -17,6 +17,11 @@ let serverStats = null;
 let lastCompletion = null;
 let lastFocus = null;
 let toastTimer;
+let shareCard = null;
+let shareCardUrl = null;
+let shareLink = null;
+let shareText = null;
+let lastShareFocus = null;
 const apiBase = analyticsBaseUrl.replace(/\/$/, "");
 const state = { phase: "landing", scenario: null, queue: [], answers: [], selected: null, index: 0, rerollUsed: false, runId: null, result: null };
 
@@ -226,15 +231,94 @@ function downloadStats() {
   const a = node("a"); a.href = url; a.download = "research-lab-local-stats.json"; a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+function closeSharePreview() {
+  $("#sharePreviewModal").hidden = true;
+  if (shareCardUrl) URL.revokeObjectURL(shareCardUrl);
+  shareCardUrl = null;
+  shareCard = null;
+  $("#sharePreviewImage").removeAttribute("src");
+  lastShareFocus?.focus();
+}
+
 async function shareResult() {
+  if (!state.result) return;
+  lastShareFocus = document.activeElement;
   const result = state.result;
-  const url = new URL(location.href); url.search = "?from=share"; url.hash = "";
-  const text = `我测出了「${result.name}」，科研指数 ${result.score} 分。你是卷王、咸鱼还是抽象派？`;
+  const url = new URL(location.href);
+  url.search = "?from=share";
+  url.hash = "";
+  shareLink = url.href;
+  shareText = `我测出了「${result.name}」，科研指数 ${result.score} 分。你是卷王、咸鱼还是抽象派？`;
+  setText("#shareDialogStatus", "正在生成结果图片…");
+  $("#sharePreviewModal").hidden = false;
+  $("#sharePreviewImage").removeAttribute("src");
+  $("#closeSharePreviewButton").focus();
+  $("#shareImageButton").hidden = true;
+  $("#saveShareImageButton").disabled = true;
+  $("#copyShareLinkButton").disabled = true;
   try {
-    if (navigator.share) await navigator.share({ title: "科研潜力实验室", text, url: url.href });
-    else { await navigator.clipboard.writeText(`${text}\n${url.href}`); toast("文案和链接已复制，发给你的科研搭子吧！"); }
+    const { buildShareCard } = await import("./share-card.js?v=0.3.4");
+    shareCard = await buildShareCard(result, shareLink);
+    shareCardUrl = URL.createObjectURL(shareCard);
+    $("#sharePreviewImage").src = shareCardUrl;
+    $("#saveShareImageButton").disabled = false;
+    $("#copyShareLinkButton").disabled = false;
+    const file = new File([shareCard], `科研人格-${result.id}.png`, { type: "image/png" });
+    const canShareFile = typeof navigator.share === "function" && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] });
+    $("#shareImageButton").hidden = !canShareFile;
+    setText("#shareDialogStatus", canShareFile ? "可以分享图片和测试链接，也可以先保存图片。" : "此浏览器不支持直接分享图片；保存图片后，可在微信聊天中发送。二维码内含测试链接。");
+    $("#closeSharePreviewButton").focus();
+  } catch {
+    setText("#shareDialogStatus", "结果图生成失败，请截图保存结果页，再复制测试链接。");
+    $("#copyShareLinkButton").disabled = false;
+    $("#closeSharePreviewButton").focus();
+  }
+}
+
+async function shareImage() {
+  if (!shareCard) return;
+  const result = state.result;
+  const file = new File([shareCard], `科研人格-${result.id}.png`, { type: "image/png" });
+  try {
+    await navigator.share({ files: [file], title: "科研潜力实验室", text: `${shareText}\n${shareLink}` });
     record("share");
-  } catch (error) { if (error.name !== "AbortError") toast("可以截图分享结果，或复制浏览器地址发给朋友。"); }
+    toast("分享面板已打开");
+  } catch (error) {
+    if (error.name !== "AbortError") toast("系统分享失败，可以保存图片后在微信中发送。");
+  }
+}
+
+function saveShareImage() {
+  if (!shareCardUrl || !state.result) return;
+  const link = node("a");
+  link.href = shareCardUrl;
+  link.download = `科研人格-${state.result.id}.png`;
+  link.click();
+  toast("结果图片已保存；可在微信聊天中发送这张图片。");
+}
+
+async function copyShareLink() {
+  if (!shareLink) return;
+  const value = `${shareText}\n${shareLink}`;
+  try {
+    await navigator.clipboard.writeText(value);
+  } catch {
+    const input = node("textarea");
+    input.value = value;
+    input.setAttribute("readonly", "");
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    document.body.append(input);
+    input.select();
+    const copied = document.execCommand("copy");
+    input.remove();
+    if (!copied) {
+      toast("无法自动复制链接，请长按图片中的二维码分享。");
+      return;
+    }
+  }
+  record("share");
+  toast("测试链接和文案已复制");
 }
 
 $("#startButton").addEventListener("click", startQuiz);
@@ -260,6 +344,11 @@ $("#nextButton").addEventListener("click", () => {
   else { state.index += 1; renderQuestion(); window.scrollTo({ top: 0, behavior: "instant" }); }
 });
 $("#shareButton").addEventListener("click", shareResult);
+$("#shareImageButton").addEventListener("click", shareImage);
+$("#saveShareImageButton").addEventListener("click", saveShareImage);
+$("#copyShareLinkButton").addEventListener("click", copyShareLink);
+$("#closeSharePreviewButton").addEventListener("click", closeSharePreview);
+$("#sharePreviewModal").addEventListener("click", (event) => { if (event.target === $("#sharePreviewModal")) closeSharePreview(); });
 for (const selector of ["#statsButton", "#resultStatsButton"]) $(selector).addEventListener("click", showStats);
 $("#closeStatsButton").addEventListener("click", closeStats);
 $("#statsModal").addEventListener("click", (event) => { if (event.target === $("#statsModal")) closeStats(); });
@@ -271,6 +360,15 @@ $("#resetStatsButton").addEventListener("click", () => {
   toast("本机记录已清除");
 });
 document.addEventListener("keydown", (event) => {
+  if (!$("#sharePreviewModal").hidden) {
+    if (event.key === "Escape") closeSharePreview();
+    if (event.key === "Tab") {
+      const buttons = [...$("#sharePreviewModal").querySelectorAll("button")].filter((button) => !button.hidden && !button.disabled);
+      const first = buttons[0], last = buttons.at(-1);
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
+  }
   if ($("#statsModal").hidden) return;
   if (event.key === "Escape") closeStats();
   if (event.key === "Tab") {
