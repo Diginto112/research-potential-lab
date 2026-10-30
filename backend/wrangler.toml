@@ -1,0 +1,16 @@
+name = "research-lab-stats"
+main = "worker.js"
+compatibility_date = "2026-10-30"
+
+[vars]
+SITE_ORIGIN = "https://wqh12.github.io"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "research-lab-stats"
+# Replace with the ID printed by `wrangler d1 create research-lab-stats`.
+database_id = "REPLACE_WITH_YOUR_DATABASE_ID"
+migrations_dir = "migrations"
+
+# Set the admin password with `wrangler secret put ADMIN_TOKEN`.
+# Never put that password in this file, config.js, or the GitHub repository.

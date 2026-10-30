@@ -6,10 +6,7 @@
     <meta name="description" content="一个不太严肃的科研人格测试：测测你的创新性、前沿性与科研生存能力。" />
     <meta name="theme-color" content="#111827" />
     <title>科研潜力实验室 · 非严肃测评</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=0.3.1" />
   </head>
   <body>
     <div class="app-shell">
@@ -19,8 +16,8 @@
           <span>科研潜力实验室</span>
         </button>
         <div class="header-actions">
-          <span class="version-pill">BETA 0.1</span>
-          <button class="icon-button" id="statsButton" type="button" title="查看本机演示统计" aria-label="查看本机演示统计">⌁</button>
+          <span class="version-pill">BETA 0.3</span>
+          <button class="icon-button" id="statsButton" type="button" title="查看测试记录" aria-label="查看测试记录">⌁</button>
         </div>
       </header>
 
@@ -36,9 +33,9 @@
                 <button class="text-button" id="howButton" type="button">怎么玩？</button>
               </div>
               <div class="trust-row">
-                <span><strong id="landingUnlockCount">2,847</strong> 人已解锁人格</span>
+                <span><strong id="landingUnlockCount">本机已完成 0 次测试</strong></span>
                 <span class="trust-separator">·</span>
-                <span>答案不会上传</span>
+                <span>不需要登录</span>
               </div>
             </div>
             <div class="landing-art" aria-label="科研潜力实验室插画">
@@ -63,7 +60,7 @@
           <div class="quiz-topbar">
             <button class="back-button" id="backToLandingButton" type="button">← <span>返回</span></button>
             <div class="progress-wrap" aria-label="答题进度">
-              <div class="progress-meta"><span id="progressLabel">第 1 / 6 题</span><span id="progressPercent">0%</span></div>
+              <div class="progress-meta"><span id="progressLabel">先挑一个科研现场</span><span id="progressPercent">0%</span></div>
               <div class="progress-track"><div class="progress-value" id="progressValue"></div></div>
             </div>
             <span class="mono-label">FIELD TEST / 01</span>
@@ -81,7 +78,7 @@
 
             <div class="question-column">
               <div class="question-kicker"><span class="kicker-index" id="questionIndex">01</span><span id="questionType">观察题</span></div>
-              <h2 id="quizTitle">你在路边看到一只野狗，对着电线杆撒尿。</h2>
+              <h2 id="quizTitle" tabindex="-1">你在路边看到一只野狗，对着电线杆撒尿。</h2>
               <p class="question-context" id="questionContext">导师刚好路过，推了推眼镜：“这个现象很有意思。”你决定如何回应？</p>
 
               <div class="scenario-actions" id="scenarioActions">
@@ -105,13 +102,13 @@
           </div>
           <div class="result-grid">
             <div class="result-main-card">
-              <div class="result-card-top"><span>RESEARCHER PROFILE</span><span id="resultRank">NO. 2848</span></div>
+              <div class="result-card-top"><span>RESEARCHER PROFILE</span><span id="resultRank">LOCAL RECORD</span></div>
               <div class="result-badge" id="resultBadge">✦</div>
               <p class="result-label">你的科研人格是</p>
-              <h2 id="resultTitle">冉冉升起的科研巨星</h2>
+              <h2 id="resultTitle" tabindex="-1">你的科研人格</h2>
               <p class="result-description" id="resultDescription">你能在荒诞现象里抓住问题，也愿意把灵感落成实验。导师嘴上说着“再想想”，心里已经开始给你排会议了。</p>
               <div class="result-tags" id="resultTags"></div>
-              <div class="result-card-bottom"><span>科研潜力实验室 / BETA 0.1</span><span id="resultUnlockNumber">第 2,848 位</span></div>
+              <div class="result-card-bottom"><span>科研潜力实验室 / BETA 0.3</span><span id="resultUnlockNumber"></span></div>
             </div>
             <div class="result-side">
               <div class="score-panel">
@@ -128,32 +125,49 @@
               </div>
             </div>
           </div>
+          <div class="result-details">
+            <section class="metrics-panel" aria-labelledby="tendencyTitle">
+              <h3 id="tendencyTitle">你的科研生存倾向</h3>
+              <div id="tendencyList"></div>
+            </section>
+            <section class="metrics-panel" aria-labelledby="collectionTitle">
+              <h3 id="collectionTitle">科研人格图鉴 <small id="collectionCount"></small></h3>
+              <div class="persona-collection" id="personaCollection"></div>
+            </section>
+          </div>
           <div class="result-actions">
             <button class="primary-button primary-button-large" id="shareButton" type="button">分享我的科研人格 <span>↗</span></button>
             <button class="secondary-button" id="restartButton" type="button">再测一次</button>
           </div>
-          <p class="result-footnote">提示：这是一个娱乐测试，真正的科研潜力不由一只野狗决定。</p>
+          <p class="result-footnote" id="resultFootnote"></p>
         </section>
       </main>
 
       <div class="modal-backdrop" id="statsModal" hidden>
         <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="statsTitle">
           <button class="modal-close" id="closeStatsButton" type="button" aria-label="关闭">×</button>
-          <p class="eyebrow">LOCAL DEMO ANALYTICS</p>
-          <h2 id="statsTitle">本机演示统计</h2>
-          <p class="modal-copy">现在的数据保存在你的浏览器里，方便先体验产品。部署后可以接入 Supabase、Firebase 或自己的 API，查看真实访问量。</p>
+          <p class="eyebrow">YOUR LAB RECORDS</p>
+          <h2 id="statsTitle">你的测试记录</h2>
+          <p class="modal-copy" id="statsConnection"></p>
+          <p class="modal-copy" id="globalSummary"></p>
           <div class="stats-grid">
             <div class="stat-card"><span>页面打开</span><strong id="statViews">0</strong></div>
             <div class="stat-card"><span>开始测试</span><strong id="statStarts">0</strong></div>
             <div class="stat-card"><span>完成测试</span><strong id="statCompletions">0</strong></div>
             <div class="stat-card"><span>解锁人格</span><strong id="statPersonas">0</strong></div>
+            <div class="stat-card"><span>分享操作</span><strong id="statShares">0</strong></div>
+            <div class="stat-card"><span>本机完成率</span><strong id="statRate">—</strong></div>
           </div>
-          <button class="secondary-button full-button" id="resetStatsButton" type="button">清除本机统计</button>
+          <h3>本机人格分布</h3><div id="statsDistribution"></div>
+          <h3>最近五次测试</h3><div id="statsHistory"></div>
+          <p class="modal-copy">分享操作指成功调用系统分享或复制链接，不代表朋友实际打开。完成率为完成次数 / 开始次数。</p>
+          <div class="stats-actions"><button class="primary-button" id="exportStatsButton" type="button">导出本机记录</button><button class="secondary-button" id="resetStatsButton" type="button">清除本机记录</button></div>
         </div>
       </div>
 
+      <p id="storageNotice" class="storage-notice" hidden>当前浏览器无法保存记录，关闭页面后本机记录可能丢失。测试仍可正常进行。</p>
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </div>
-    <script src="script.js"></script>
+    <script type="module" src="script.js?v=0.3.1"></script>
   </body>
 </html>
