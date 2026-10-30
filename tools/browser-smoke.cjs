@@ -23,7 +23,9 @@ const screenshots = process.env.QA_DIR;
     { types: Array(6).fill('grind'), name: '实验室永动机·究极卷王', score: '72' },
     { types: Array(6).fill('spark'), name: '学术物种·不可被同行理解', score: '77' },
     { types: Array(6).fill('rigorous'), name: '冉冉升起的科研巨星', score: '88' },
-    { types: ['rigorous','rigorous','spark','spark','slacker','grind'], name: '中规中矩的科研牛马' }
+    { types: ['spark','rigorous','spark','slacker','rigorous','spark'], name: '脑洞过载的课题发明家' },
+    { types: ['slacker','rigorous','slacker','rigorous','spark','slacker'], name: '带薪观测型科研咸鱼' },
+    { types: ['rigorous','spark','slacker','rigorous','spark','slacker'], name: '中规中矩的科研牛马' }
   ];
   for (let run = 0; run < paths.length; run += 1) {
     if (run === 0) await page.click('#startButton'); else await page.click('#restartButton');
@@ -55,9 +57,9 @@ const screenshots = process.env.QA_DIR;
     if (screenshots && run === 0) await page.screenshot({ path: path.join(screenshots, 'phone-result.png'), fullPage: true });
   }
   await page.click('#resultStatsButton');
-  assert.equal(await page.locator('#statCompletions').innerText(), '5');
-  assert.equal(await page.locator('#statStarts').innerText(), '5');
-  assert.equal(await page.locator('#statPersonas').innerText(), '5');
+  assert.equal(await page.locator('#statCompletions').innerText(), '7');
+  assert.equal(await page.locator('#statStarts').innerText(), '7');
+  assert.equal(await page.locator('#statPersonas').innerText(), '7');
   assert.equal(await page.locator('#statRate').innerText(), '100%');
   await fits();
   if (screenshots) await page.screenshot({ path: path.join(screenshots, 'phone-stats.png') });
@@ -79,5 +81,5 @@ const screenshots = process.env.QA_DIR;
   assert.equal(await blockedPage.locator('#storageNotice').isVisible(), true);
   assert.deepEqual(errors, []);
   await browser.close();
-  console.log('Browser checks passed: 5 scoring paths, reroll/reset, local persistence, stats, 360–1365px layouts, blocked storage, zero page errors.');
+  console.log('Browser checks passed: 7 scoring paths, reroll/reset, local persistence, stats, 360–1365px layouts, blocked storage, zero page errors.');
 })().catch(error => { console.error(error); process.exit(1); });

@@ -47,7 +47,7 @@ test("all eight personas are reachable through real randomized decks in every sc
     spark: ["spark", "spark", "spark", "spark", "rigorous", "rigorous"],
     slacker: ["slacker", "slacker", "slacker", "slacker", "rigorous", "rigorous"],
     grind: ["grind", "grind", "grind", "grind", "rigorous", "rigorous"],
-    mixed: ["rigorous", "spark", "slacker", "grind", "rigorous", "spark"],
+    mixed: ["rigorous", "spark", "slacker", "rigorous", "spark", "slacker"],
     hiddenSlacker: Array(6).fill("slacker"),
     hiddenGrind: Array(6).fill("grind"),
     hiddenSpark: Array(6).fill("spark")
@@ -67,7 +67,7 @@ test("regression: four metric totals are divided by both question count and dime
   assert.equal(evaluate(answersFor(Array(6).fill("spark"))).score, 77);
 });
 test("all 4096 strategy sequences produce finite bounded scores and stable personas", () => {
-  const scoreSet = new Set(), personaSet = new Set();
+  const scoreSet = new Set(), personaSet = new Set(), distribution = {};
   for (let n = 0; n < 4096; n += 1) {
     const types = Array.from({ length: 6 }, (_, i) => ids[(n >> (i * 2)) & 3]);
     const result = evaluate(answersFor(types));
@@ -76,8 +76,13 @@ test("all 4096 strategy sequences produce finite bounded scores and stable perso
     assert.ok(Object.values(result.metrics).every((v) => v >= 0 && v <= 100));
     assert.equal(evaluate(answersFor(types)).id, result.id);
     scoreSet.add(result.score); personaSet.add(result.id);
+    distribution[result.id] = (distribution[result.id] || 0) + 1;
   }
   assert.equal(personaSet.size, 8); assert.ok(scoreSet.size > 30);
+  // Exhaustive, equally likely strategy paths: mixed is a minority, and ordinary
+  // personas have sufficient reachable space instead of almost always falling back.
+  assert.equal(distribution.mixed, 360);
+  for (const id of ids) assert.ok(distribution[id] / 4096 > 0.20, id);
 });
 test("server rejects missing, duplicate, unknown and wrong-scenario answers", () => {
   const valid = answersFor(Array(6).fill("rigorous"));
@@ -99,4 +104,26 @@ test("local statistics start at zero, handle blocked storage, and keep results s
   assert.equal(stats.sources.share, 1); assert.equal(stats.personaCounts.hiddenSlacker, 1);
   assert.equal(stats.history[0].score, 46);
   assert.equal("answers" in stats.history[0], false);
+});
+
+
+test("a one-answer lead yields the dominant ordinary persona instead of mixed", () => {
+  for (const leader of ids) {
+    const [runnerUp, third] = ids.filter((id) => id !== leader);
+    const result = evaluate(answersFor([leader, runnerUp, leader, third, runnerUp, leader]));
+    assert.equal(result.id, leader);
+  }
+});
+test("two tied tendencies use the last answer among leaders, ignoring lower tendencies", () => {
+  const path = ["spark", "slacker", "rigorous", "rigorous", "spark", "grind"];
+  assert.equal(evaluate(answersFor(path)).id, "spark");
+  const swapped = path.map((id) => id === "spark" ? "rigorous" : id === "rigorous" ? "spark" : id);
+  assert.equal(evaluate(answersFor(swapped)).id, "rigorous");
+  assert.equal(evaluate(answersFor(["slacker", "grind", "slacker", "grind", "slacker", "grind"])).id, "grind");
+});
+test("three-way top ties stay mixed and hidden conditions take precedence", () => {
+  assert.equal(evaluate(answersFor(["rigorous", "rigorous", "spark", "spark", "grind", "grind"])).id, "mixed");
+  for (const [strategy, expected] of [["spark", "hiddenSpark"], ["slacker", "hiddenSlacker"], ["grind", "hiddenGrind"]]) {
+    assert.equal(evaluate(answersFor([...Array(5).fill(strategy), "rigorous"])).id, expected);
+  }
 });

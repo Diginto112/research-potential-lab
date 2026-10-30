@@ -60,3 +60,21 @@ test("invalid and unstarted results are rejected without affecting counters", as
   assert.equal((await post(env, payload)).status, 400);
   assert.equal((await (await get(env, "/public-stats")).json()).completions, 0);
 });
+
+
+test("server applies the revised ordinary and mixed rules using canonical answers", async () => {
+  const env = environment();
+  const paths = [
+    { expected: "spark", types: ["spark", "rigorous", "spark", "slacker", "rigorous", "spark"] },
+    { expected: "slacker", types: ["slacker", "rigorous", "slacker", "rigorous", "spark", "slacker"] },
+    { expected: "mixed", types: ["rigorous", "spark", "slacker", "rigorous", "spark", "slacker"] }
+  ];
+  for (let i = 0; i < paths.length; i += 1) {
+    const runId = 'rebalance-run-' + i;
+    await post(env, event("start", { runId }));
+    const answers = buildRun("dog").map((q, index) => ({ questionId: q.id, strategy: paths[i].types[index] }));
+    const response = await post(env, event("complete", { runId, answers }));
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).personaId, paths[i].expected);
+  }
+});

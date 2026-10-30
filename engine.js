@@ -9,7 +9,7 @@ export const strategies = {
 export const metricNames = ["innovation", "frontier", "feasibility", "resilience"];
 export const personas = {
   rigorous: { name: "冉冉升起的科研巨星", badge: "✦", description: "离谱的选题到了你手里，也能长出对照组、记录表和证据链。你知道‘听起来很新’和‘确实有用’之间，还差一套经得起追问的实验。", comment: "你的超能力：把一地鸡毛整理成可复现的方法。", tags: ["证据链完整", "靠谱合作者", "先验证再吹"] },
-  spark: { name: "茶歇区的学术大拿", badge: "☕", description: "开会五分钟，你已经新建了三门学科。别人问技术路线，你开始重构世界观。想法很难预测，茶歇很难缺席，先把其中一个脑洞写成能验证的问题吧。", comment: "你的创新点很多，主要还没同意降落。", tags: ["抽象派", "理论升维", "茶歇常驻"] },
+  spark: { name: "脑洞过载的课题发明家", badge: "✧", description: "别人看到一只鸽子，你看到三个跨学科方向；导师刚问为什么，你已经给新领域起好了名字。你敢把日常现象拧成离谱选题，也愿意拽回一点现实，让想法有机会落地。", comment: "选题已经跑出实验室，方法还在穿鞋。", tags: ["万物皆可选题", "脑洞先行", "方法追赶中"] },
   slacker: { name: "带薪观测型科研咸鱼", badge: "☁", description: "你会观察天色、观察饭点，也会顺便观察研究对象。进度可以慢一点，生活不能完全消失。论文暂时没长大，但你至少把自己养活了。", comment: "你相信最好的科研工具里，应该有一张舒服的床。", tags: ["低耗能科研", "边界感", "下班积极"] },
   grind: { name: "截止日期的人形代打", badge: "↗", description: "导师刚提需求，你已经开始建文件夹。你擅长把‘可能来不及’压缩成‘我今晚试试’，论文的每个附录里都藏着你的周末。", comment: "论文在推进，你的睡眠在持续修回。", tags: ["补位王", "行动派", "自带充电线"] },
   mixed: { name: "中规中矩的科研牛马", badge: "⇄", description: "你在严谨、抽象、摆烂和爆肝之间灵活切换：该做时做，该躺时躺，偶尔用一句逆天发言唤醒组会。没有哪一派能完全代表你，科研生活的复杂性都在你身上了。", comment: "各项天赋势均力敌，上班状态随机刷新。", tags: ["混合型选手", "状态切换", "适应性生存"] },
@@ -52,7 +52,10 @@ export function evaluate(answers) {
   }
   const points = Object.fromEntries(Object.entries(counts).map(([key, count]) => [key, count * 3]));
   const ranking = Object.entries(points).sort((a, b) => b[1] - a[1]);
-  let id = ranking[0][1] - ranking[1][1] <= 3 ? "mixed" : ranking[0][0];
+  const leaders = ranking.filter(([, value]) => value === ranking[0][1]).map(([key]) => key);
+  // A broad three-way tie is mixed; a two-way tie follows the player's most recent
+  // choice among those leaders. Never use option position, fixed ID order, or chance.
+  let id = leaders.length >= 3 ? "mixed" : answers.findLast((answer) => leaders.includes(answer.strategy)).strategy;
   if (counts.slacker >= 5) id = "hiddenSlacker";
   else if (counts.grind >= 5) id = "hiddenGrind";
   else if (counts.spark >= 5) id = "hiddenSpark";

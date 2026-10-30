@@ -1,5 +1,5 @@
 import { scenarios } from "./questions.js";
-import { buildRun, evaluate, personas, strategies, metricNames } from "./engine.js";
+import { buildRun, evaluate, personas, strategies, metricNames } from "./engine.js?v=0.3.3";
 import { analyticsBaseUrl } from "./config.js";
 import { readStore, applyEvent, emptyStats, STORAGE_KEY } from "./storage.js";
 
