@@ -32,7 +32,7 @@ npx wrangler login
 npx wrangler d1 create research-lab-stats
 ```
 
-2. 把返回的数据库 ID 填入 `backend/wrangler.toml` 的 `database_id`。`SITE_ORIGIN` 填前端**来源**，当前是 `https://wqh12.github.io`，不要带仓库路径或尾部斜杠。
+2. 把返回的数据库 ID 填入 `backend/wrangler.toml` 的 `database_id`。`SITE_ORIGIN` 填前端**来源**，当前是 `https://diginto112.github.io`，不要带仓库路径或尾部斜杠。
 3. 创建数据库表：
 
 ```sh

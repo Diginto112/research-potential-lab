@@ -4,7 +4,7 @@
 
 把熟悉的科研日常，变成一场不太正经的问答冒险。面对荒诞的选题、突如其来的组会和导师的灵魂追问，你会如何接招？
 
-👉 **[点击开始测试](https://wqh12.github.io/research-potential-lab/)**
+👉 **[点击开始测试](https://diginto112.github.io/research-potential-lab/)**
 
 ## 怎么玩
 
@@ -24,6 +24,6 @@
 
 ## 有点子？
 
-欢迎在 [Issues](https://github.com/WQH12/research-potential-lab/issues) 分享新的荒诞现场、逆天选项，或反馈手机显示问题。反馈问题时，可以附上场景、机型和截图。
+欢迎在 [Issues](https://github.com/diginto112/research-potential-lab/issues) 分享新的荒诞现场、逆天选项，或反馈手机显示问题。反馈问题时，可以附上场景、机型和截图。
 
 **纯属娱乐，不是心理量表，不评价真实科研能力。**
